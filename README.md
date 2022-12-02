@@ -7,6 +7,18 @@ npm i
 npm start
 ```
 
+To run specific day:
+
+```
+npm start -- --day 1
+```
+
+Help:
+
+```
+npm start -- --help
+```
+
 ## Days
 
 * [Day 1](day1)
