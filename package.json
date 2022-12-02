@@ -1,0 +1,27 @@
+{
+  "name": "adventofcode2022",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node --esm index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exdis/adventofcode2022.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/exdis/adventofcode2022/issues"
+  },
+  "homepage": "https://github.com/exdis/adventofcode2022#readme",
+  "devDependencies": {
+    "@types/inquirer": "^9.0.3",
+    "@types/node": "^18.11.10",
+    "inquirer": "^8",
+    "ts-node": "^10.9.1"
+  }
+}
