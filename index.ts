@@ -6,7 +6,7 @@ const directories = readdirSync(__dirname, { withFileTypes: true })
     .filter(item => item.isDirectory() && item.name.startsWith('day'))
     .map(item => ({ name: item.name, value: item.name.replace(/^day/, '') }));
 
-const runDay = day => {
+const runDay = (day: string) => {
     try {
         require(`./day${day}`).run();
     } catch (err) {
@@ -16,7 +16,7 @@ const runDay = day => {
 }
 
 const command = clap.command('default')
-    .option('-d --day <day>', 'Run specific day', value => Number(value))
+    .option('-d --day <day>', 'Run specific day', (value: any) => Number(value))
     .description('Advent of code solutions')
 
     .action(({ options }) => {
