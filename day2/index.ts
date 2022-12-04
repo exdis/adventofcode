@@ -1,5 +1,4 @@
-import path from 'path';
-import fs from 'fs';
+import { getInputLines } from '../utils';
 
 type Item = 'A' | 'B' | 'C' | 'X' | 'Y' | 'Z';
 
@@ -18,9 +17,7 @@ const scoreMap: Map<Item, { wins: Item, draw: Item, score: number }> = new Map([
 export const run = () => {
     let score = 0;
 
-    const input = fs.readFileSync(path.join(__dirname, 'input.txt'))
-        .toString()
-        .split('\n');
+    const input = getInputLines(2);
 
     for (const item of input) {
         const [opponent, me] = item.split(' ') as Item[];

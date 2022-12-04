@@ -1,5 +1,4 @@
-import path from 'path';
-import fs from 'fs';
+import { getInputLines } from '../utils';
 
 const getItemPriority = (item: string) => {
     if (item === item.toUpperCase()) {
@@ -10,9 +9,7 @@ const getItemPriority = (item: string) => {
 }
 
 export const run = () => {
-    const input = fs.readFileSync(path.join(__dirname, 'input.txt'))
-        .toString()
-        .split('\n');
+    const input = getInputLines(3);
 
     let sum = 0;
 

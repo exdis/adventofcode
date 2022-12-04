@@ -1,10 +1,7 @@
-import path from 'path';
-import fs from 'fs';
+import { getInputLines } from '../utils';
 
 export const run = () => {
-    const input = fs.readFileSync(path.join(__dirname, 'input.txt'))
-        .toString()
-        .split('\n');
+    const input = getInputLines(4);
 
     let overlaps = 0;
 

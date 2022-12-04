@@ -7,12 +7,16 @@ const directories = readdirSync(__dirname, { withFileTypes: true })
     .map(item => ({ name: item.name, value: item.name.replace(/^day/, '') }));
 
 const runDay = (day: string) => {
+    let dayFunc: { run: () => void };
+
     try {
-        require(`./day${day}`).run();
+        dayFunc = require(`./day${day}`);
     } catch (err) {
         console.error('Error: wrong day!');
         process.exit(1);
     }
+
+    dayFunc.run();
 }
 
 const command = clap.command('default')
