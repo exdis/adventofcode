@@ -7,6 +7,7 @@ export const run = () => {
     const moveInstructions = input.slice(idx);
 
     const stacks = [];
+    const stacksPartTwo = []
 
     for (let i = 0; i < idx - 1; i++) {
         const item = input[i];
@@ -18,6 +19,9 @@ export const run = () => {
             if (itemLetter) {
                 stacks[j] = stacks[j] || [];
                 stacks[j].unshift(itemLetter);
+
+                stacksPartTwo[j] = stacksPartTwo[j] || [];
+                stacksPartTwo[j].unshift(itemLetter);
             }
         }
     }
@@ -33,13 +37,23 @@ export const run = () => {
             const item = stacks[parseInt(from, 10) - 1].pop();
             stacks[parseInt(to, 10) - 1].push(item);
         }
+
+        const toMove = stacksPartTwo[parseInt(from, 10) - 1]
+            .splice(stacksPartTwo[parseInt(from, 10) - 1].length - parseInt(qty, 10), parseInt(qty, 10));
+        stacksPartTwo[parseInt(to, 10) - 1].push(...toMove);
     }
 
     let res = '';
+    let resPartTwo = '';
 
     for (let i = 0; i < stacks.length; i++) {
         res += stacks[i][stacks[i].length - 1];
     }
 
+    for (let i = 0; i < stacksPartTwo.length; i++) {
+        resPartTwo += stacksPartTwo[i][stacksPartTwo[i].length - 1];
+    }
+
     console.log('Result:', res);
+    console.log('Result part 2:', resPartTwo);
 }
