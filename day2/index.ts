@@ -40,7 +40,6 @@ export const run = () => {
         switch (scoreMapItem.strategy) {
             case 'draw':
                 alternativeScore += DRAW_SCORE;
-                console.log('###', scoreMap.get(opponent).draw);
                 alternativeScore += scoreMap.get(scoreMap.get(opponent).draw).score;
                 break;
             case 'win':
