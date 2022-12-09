@@ -29,3 +29,4 @@ npm start -- --help
 * [Day 6](day6)
 * [Day 7](day7)
 * [Day 8](day8)
+* [Day 9](day9)
