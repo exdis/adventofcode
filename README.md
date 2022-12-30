@@ -47,5 +47,20 @@ npm start -- --help
 
 </details>
 </details>
+<details>
+<summary><h3>Rust</h3></summary>
+To start navigate to 2022/rust dir and run following:
+
+```bash
+cargo run
+```
+
+<details>
+<summary><h4>Days</h4></summary>
+
+* [Day 1](2022/rust/day1)
+
+</details>
+</details>
 </details>
 
