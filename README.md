@@ -59,6 +59,7 @@ cargo run
 <summary><h4>Days</h4></summary>
 
 * [Day 1](2022/rust/src/day1)
+* [Day 2](2022/rust/src/day2)
 
 </details>
 </details>

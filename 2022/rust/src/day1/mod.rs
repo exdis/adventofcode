@@ -1,16 +1,13 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+use adventofcode::get_input_lines;
 
 pub fn run() {
-    let input = File::open("src/day1/input.txt").unwrap();
-    let reader = BufReader::new(input);
 
     let mut max = 0;
     let mut sum = 0;
 
     let mut calories: Vec<i32> = Vec::new();
 
-    for (_, line) in reader.lines().enumerate() {
+    for (_, line) in get_input_lines(1).enumerate() {
         let line = line.unwrap();
 
         if line.len() != 0 {
