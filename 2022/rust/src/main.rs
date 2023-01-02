@@ -1,30 +1,44 @@
 use std::io;
+use std::env;
 
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 
 fn main() {
-    let day: u8 = loop {
-        let mut day = String::new();
+    let day_from_args = match env::args().nth(1) {
+        Some(day) => day,
+        None => String::from("0")
+    };
+    let day_from_args: u8 = match day_from_args.trim().parse::<u8>() {
+        Ok(num) => num,
+        Err(_) => 0
+    };
 
-        println!("Specify day:");
+    let day: u8 = if day_from_args > 0 { day_from_args } else {
+        loop {
+            let mut day = String::new();
 
-        io::stdin().read_line(&mut day).expect("Error!");
+            println!("Specify day:");
 
-        match day.trim().parse::<u8>() {
-            Ok(num) => { break num },
-            Err(_) => {
-                println!("Wrong day specified!");
-                continue;
-            }
-        };
+            io::stdin().read_line(&mut day).expect("Error!");
+
+            match day.trim().parse::<u8>() {
+                Ok(num) => { break num },
+                Err(_) => {
+                    println!("Wrong day specified!");
+                    continue;
+                }
+            };
+        }
     };
 
     match day {
         1 => day1::run(),
         2 => day2::run(),
         3 => day3::run(),
+        4 => day4::run(),
         _ => println!("Wrong day specified!")
     };
 }

@@ -55,12 +55,19 @@ To start navigate to 2022/rust dir and run following:
 cargo run
 ```
 
+Or to run specific day:
+
+```bash
+cargo run -- 1
+```
+
 <details>
 <summary><h4>Days</h4></summary>
 
 * [Day 1](2022/rust/src/day1)
 * [Day 2](2022/rust/src/day2)
 * [Day 3](2022/rust/src/day3)
+* [Day 4](2022/rust/src/day4)
 
 </details>
 </details>
