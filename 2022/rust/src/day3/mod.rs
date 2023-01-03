@@ -20,9 +20,7 @@ pub fn run() {
         sets.push(HashSet::<char>::new());
     }
 
-    for (_, line) in get_input_lines(3).enumerate() {
-        let line = line.unwrap();
-
+    for line in get_input_lines(3) {
         if line.len() == 0 { continue; }
 
         let mut first_compartment = HashSet::<char>::new();

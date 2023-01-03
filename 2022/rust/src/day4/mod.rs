@@ -6,9 +6,7 @@ pub fn run() {
     let mut overlaps = 0;
     let mut full_overlaps = 0;
 
-    for (_, line) in lines.enumerate() {
-        let line = line.unwrap();
-
+    for line in lines {
         if line.len() == 0 { continue; }
 
         let sections: Vec<&str> = line.split(",").collect();

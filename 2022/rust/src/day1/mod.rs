@@ -7,9 +7,7 @@ pub fn run() {
 
     let mut calories: Vec<i32> = Vec::new();
 
-    for (_, line) in get_input_lines(1).enumerate() {
-        let line = line.unwrap();
-
+    for line in get_input_lines(1) {
         if line.len() != 0 {
             sum = sum + line.parse::<i32>().unwrap();
         } else {

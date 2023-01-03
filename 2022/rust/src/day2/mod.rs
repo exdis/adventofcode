@@ -31,9 +31,7 @@ pub fn run() {
     score_map.insert('Y', ScoreMap { wins: 'A', draw: 'B', loose: 'C', score: 2, strategy: Strategy::Draw });
     score_map.insert('Z', ScoreMap { wins: 'B', draw: 'C', loose: 'A', score: 3, strategy: Strategy::Win });
 
-    for (_, line) in get_input_lines(2).enumerate() {
-        let line = line.unwrap();
-
+    for line in get_input_lines(2) {
         if line.len() == 0 { continue; }
 
         let opponent = line.chars().nth(0).unwrap();

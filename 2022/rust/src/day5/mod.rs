@@ -2,7 +2,7 @@ use regex::Regex;
 use adventofcode::get_input_lines;
 
 pub fn run() {
-    let input: Vec<String> = get_input_lines(5).map(|item| item.unwrap()).collect();
+    let input = get_input_lines(5);
 
     let idx = input.iter().position(|item| item.len() == 0).unwrap();
 
