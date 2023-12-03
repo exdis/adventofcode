@@ -29,6 +29,7 @@ npm start -- --help
 * [Day 1](2023/wat/day1)
 </details>
 </details>
+</details>
 <summary><h2>Year 2022</h2></summary>
 <details>
 <summary><h3>TypeScript</h3></summary>
