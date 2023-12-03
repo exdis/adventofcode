@@ -1,6 +1,5 @@
 # Advent Of Code solutions
 
-<details>
 <summary><h2>Year 2023</h2></summary>
 <details>
 <summary><h3>Web Assembly Text</h3></summary>
@@ -27,7 +26,6 @@ npm start -- --help
 <summary><h4>Days</h4></summary>
 
 * [Day 1](2023/wat/day1)
-</details>
 </details>
 </details>
 <summary><h2>Year 2022</h2></summary>
