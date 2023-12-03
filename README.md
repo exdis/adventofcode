@@ -1,6 +1,34 @@
 # Advent Of Code solutions
 
 <details>
+<summary><h2>Year 2023</h2></summary>
+<details>
+<summary><h3>Web Assembly Text</h3></summary>
+To start navigate to 2023/wat dir and run following:
+
+```bash
+npm i
+npm start
+```
+
+To run specific day:
+
+```
+npm start -- --day 1
+```
+
+Help:
+
+```
+npm start -- --help
+```
+
+<details>
+<summary><h4>Days</h4></summary>
+
+* [Day 1](2023/wat/day1)
+</details>
+</details>
 <summary><h2>Year 2022</h2></summary>
 <details>
 <summary><h3>TypeScript</h3></summary>
