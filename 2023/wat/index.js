@@ -46,8 +46,11 @@ const runDay = (day) => {
                 length = inputBuffer.length;
 
                 const result = instance.exports.run();
+                const result2 = instance.exports.run2
+                    ? instance.exports.run2()
+                    : "";
 
-                console.log("Result: ", result);
+                console.log("Result: ", result, result2);
             });
         });
     } catch (err) {
