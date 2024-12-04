@@ -1,5 +1,27 @@
 # Advent Of Code solutions
 
+<summary><h2>Year 2024</h2></summary>
+<details>
+<summary><h3>Gleam</h3></summary>
+To start navigate to 2024/glm_aoc dir and run following:
+
+```
+gleam run -- --day %DAY_NUMBER%
+```
+
+Help:
+
+```
+gleam run -- --help
+```
+
+<details>
+<summary><h4>Days</h4></summary>
+
+* [Day 1](2024/glm_aoc/src/day1)
+</details>
+</details>
+
 <summary><h2>Year 2023</h2></summary>
 <details>
 <summary><h3>Web Assembly Text</h3></summary>
@@ -28,6 +50,7 @@ npm start -- --help
 * [Day 1](2023/wat/day1)
 </details>
 </details>
+
 <summary><h2>Year 2022</h2></summary>
 <details>
 <summary><h3>TypeScript</h3></summary>
