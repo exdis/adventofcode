@@ -5,6 +5,7 @@ import clip/arg
 import argv
 
 import day1/day1
+import day2/day2
 
 fn command() {
     clip.command({
@@ -17,6 +18,7 @@ fn command() {
 fn run_day(day) {
     case day {
         1 -> day1.execute()
+        2 -> day2.execute()
         _ -> io.println("Day not implemented")
     }
 }
