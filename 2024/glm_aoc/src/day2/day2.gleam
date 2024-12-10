@@ -83,6 +83,6 @@ pub fn execute() {
         }
     })
 
-    io.println("Day 1 result 1: " <> int.to_string(res1))
+    io.println("Day 2 result 1: " <> int.to_string(res1))
     io.println("      result 2: " <> int.to_string(res2))
 }
