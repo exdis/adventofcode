@@ -1,5 +1,23 @@
 # Advent Of Code solutions
 
+<summary><h2>Year 2025</h2></summary>
+<details>
+<summary><h3>Zig</h3></summary>
+To start navigate to 2025 dir and run following:
+
+```
+zig build run -- --day %DAY_NUMBER%
+```
+
+<details>
+<summary><h4>Days</h4></summary>
+
+* [Day 1](2025/src/day1)
+* [Day 2](2025/src/day2)
+* [Day 3](2025/src/day3)
+</details>
+</details>
+
 <summary><h2>Year 2024</h2></summary>
 <details>
 <summary><h3>Gleam</h3></summary>
