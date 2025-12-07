@@ -22,7 +22,9 @@ pub fn readInputLines(allocator: std.mem.Allocator, filename: []const u8) !Input
 
     var iter = std.mem.splitScalar(u8, data, '\n');
     while (iter.next()) |line| {
-        try lines.append(allocator, line);
+        if (line.len > 0) {
+            try lines.append(allocator, line);
+        }
     }
 
     return .{
