@@ -12,7 +12,32 @@ pub fn run() !void {
     const grid = try createGrid(allocator, input.lines);
     defer freeGrid(allocator, grid);
 
+    const result = try getRemovable(allocator, grid);
+    defer allocator.free(result.coords);
+    std.debug.print("Result: {}\n", .{result.count});
+
+    var result2: u256 = 0;
+    while (true) {
+        const res = try getRemovable(allocator, grid);
+        defer allocator.free(res.coords);
+
+        if (res.count == 0) break;
+
+        result2 += res.count;
+
+        for (res.coords) |coords| {
+            grid[coords.y][coords.x] = '.';
+        }
+    }
+    std.debug.print("Result 2: {}\n", .{result2});
+}
+
+const Coords = struct { x: usize, y: usize };
+
+fn getRemovable(allocator: std.mem.Allocator, grid: [][]u8) !struct { count: u256, coords: []Coords } {
     var result: u256 = 0;
+    var coords: std.ArrayList(Coords) = .{};
+    errdefer coords.deinit(allocator);
 
     for (grid, 0..) |row, y| {
         for (row, 0..) |char, x| {
@@ -52,15 +77,16 @@ pub fn run() !void {
             }
             if (adjustmentRolls < 4) {
                 result += 1;
+                try coords.append(allocator, .{ .y = y, .x = x });
             }
             // std.debug.print("grid[{d}][{d}] = {c}\n", .{ y, x, char });
         }
     }
 
-    std.debug.print("Result: {}\n", .{result});
+    return .{ .count = result, .coords = try coords.toOwnedSlice(allocator) };
 }
 
-pub fn createGrid(allocator: std.mem.Allocator, lines: std.ArrayList([]const u8)) ![][]u8 {
+fn createGrid(allocator: std.mem.Allocator, lines: std.ArrayList([]const u8)) ![][]u8 {
     const grid = try allocator.alloc([]u8, lines.items.len);
     errdefer allocator.free(grid);
 
@@ -72,7 +98,7 @@ pub fn createGrid(allocator: std.mem.Allocator, lines: std.ArrayList([]const u8)
     return grid;
 }
 
-pub fn freeGrid(allocator: std.mem.Allocator, grid: [][]u8) void {
+fn freeGrid(allocator: std.mem.Allocator, grid: [][]u8) void {
     for (grid) |row| {
         allocator.free(row);
     }
