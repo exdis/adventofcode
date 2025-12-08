@@ -72,7 +72,7 @@ pub fn run() !void {
     }
 
     var result: usize = 0;
-    for (ops.items, 0..cnt) |op, idx| {
+    for (ops.items, 0..ops.items.len) |op, idx| {
         if (op == '*') {
             var iresult: usize = 1;
             for (cols.items[idx].items) |num| {
@@ -86,5 +86,69 @@ pub fn run() !void {
         }
     }
 
-    std.debug.print("Result: {}", .{result});
+    std.debug.print("Result: {}\n", .{result});
+
+    var maxLen: usize = 0;
+    for (input.lines.items) |line| {
+        maxLen = @max(maxLen, line.len);
+    }
+
+    var i: usize = 0;
+
+    var cols2: std.ArrayList(std.ArrayList(usize)) = .{};
+    defer {
+        for (cols2.items) |*item| {
+            item.deinit(allocator);
+        }
+        cols2.deinit(allocator);
+    }
+
+    for (0..cnt) |_| {
+        const col: std.ArrayList(usize) = .{};
+        try cols2.append(allocator, col);
+    }
+
+    var colCnt: usize = 0;
+    while (i < maxLen) : (i += 1) {
+        var j: usize = 0;
+        var buf: std.ArrayList(u8) = .{};
+        defer buf.deinit(allocator);
+        var spaceCnt: usize = 0;
+        while (j < input.lines.items.len - 1) : (j += 1) {
+            const line = input.lines.items[j];
+            if (i < line.len and line[i] != ' ') {
+                try buf.append(allocator, line[i]);
+            } else {
+                spaceCnt += 1;
+            }
+        }
+        if (buf.items.len > 0) {
+            const num = try std.fmt.parseInt(usize, buf.items, 10);
+            if (colCnt < cols2.items.len) {
+                try cols2.items[colCnt].append(allocator, num);
+            }
+            buf.clearAndFree(allocator);
+        }
+        if (spaceCnt == input.lines.items.len - 1) {
+            colCnt += 1;
+            spaceCnt = 0;
+        }
+    }
+
+    var result2: usize = 0;
+    for (ops.items, 0..ops.items.len) |op, idx| {
+        if (op == '*') {
+            var iresult: usize = 1;
+            for (cols2.items[idx].items) |num| {
+                iresult *= num;
+            }
+            result2 += iresult;
+        } else if (op == '+') {
+            for (cols2.items[idx].items) |num| {
+                result2 += num;
+            }
+        }
+    }
+
+    std.debug.print("Result 2: {}\n", .{result2});
 }
