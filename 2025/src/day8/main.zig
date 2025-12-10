@@ -1,6 +1,8 @@
 const std = @import("std");
 const utils = @import("../utils.zig");
 
+const connCount: usize = 10;
+
 pub fn run() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
@@ -26,7 +28,6 @@ pub fn run() !void {
         const x = try std.fmt.parseInt(i32, xs, 10);
         const y = try std.fmt.parseInt(i32, ys, 10);
         const z = try std.fmt.parseInt(i32, zs, 10);
-        std.debug.print("### {} {} {}\n", .{ x, y, z });
 
         try points.put(idx, Point{ .id = idx, .x = x, .y = y, .z = z });
     }
@@ -45,7 +46,83 @@ pub fn run() !void {
 
     std.mem.sort(Connection, distances.items, {}, compareDist);
 
-    std.debug.print("{any}", .{distances.items[0]});
+    var circuits: std.ArrayList(std.ArrayList(usize)) = .{};
+    defer {
+        for (circuits.items) |*circuit| {
+            circuit.deinit(allocator);
+        }
+        circuits.deinit(allocator);
+    }
+
+    var firstCircuit: std.ArrayList(usize) = .{};
+    try firstCircuit.append(allocator, distances.items[0].p1);
+    try circuits.append(allocator, firstCircuit);
+
+    for (distances.items, 0..distances.items.len) |conn, idx| {
+        if (idx >= connCount) break;
+        var flag = false;
+        for (circuits.items) |*circuit| {
+            if (std.mem.indexOfScalar(usize, circuit.items, conn.p1) != null and
+                std.mem.indexOfScalar(usize, circuit.items, conn.p2) != null)
+            {
+                // Both points are already in the circuit
+                flag = true;
+                break;
+            } else if (std.mem.indexOfScalar(usize, circuit.items, conn.p1) != null and
+                std.mem.indexOfScalar(usize, circuit.items, conn.p2) == null)
+            {
+                // p1 is in the circuit, add p2
+                try circuit.append(allocator, conn.p2);
+                flag = true;
+                break;
+            } else if (std.mem.indexOfScalar(usize, circuit.items, conn.p2) != null and
+                std.mem.indexOfScalar(usize, circuit.items, conn.p1) == null)
+            {
+                // p2 is in the circuit, add p1
+                try circuit.append(allocator, conn.p1);
+                flag = true;
+                break;
+            }
+        }
+        if (!flag) {
+            // Both points are new, create a new circuit
+            var newCircuit: std.ArrayList(usize) = .{};
+            try newCircuit.append(allocator, conn.p1);
+            try newCircuit.append(allocator, conn.p2);
+            try circuits.append(allocator, newCircuit);
+        }
+    }
+
+    for (circuits.items, 0..circuits.items.len) |*circuit, idx| {
+        if (idx == circuit.items.len - 1) continue;
+        for (circuit.items) |point_id| {
+            if (idx == circuits.items.len - 1) break;
+            for (circuits.items, 0..circuits.items.len) |*otherCircuit, k| {
+                if (k < idx or k == idx) continue;
+                if (std.mem.indexOfScalar(usize, circuits.items[k].items, point_id) != null) {
+                    for (otherCircuit.items) |other_point_id| {
+                        if (std.mem.indexOfScalar(usize, circuit.items, other_point_id) == null) {
+                            try circuit.append(allocator, other_point_id);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    std.mem.sort(std.ArrayList(usize), circuits.items, {}, compareCircuits);
+
+    for (circuits.items) |circuit| {
+        std.debug.print("Circuit {any}\n", .{circuit});
+    }
+
+    var result: usize = 1;
+    for (0..3) |idx| {
+        const circuit = circuits.items[idx];
+        result *= circuit.items.len;
+    }
+
+    std.debug.print("Result: {}", .{result});
 }
 
 const Point = struct {
@@ -67,4 +144,9 @@ fn distance(p1: Point, p2: Point) f64 {
 fn compareDist(context: void, a: Connection, b: Connection) bool {
     _ = context;
     return a.dist < b.dist;
+}
+
+fn compareCircuits(context: void, a: std.ArrayList(usize), b: std.ArrayList(usize)) bool {
+    _ = context;
+    return a.items.len > b.items.len;
 }
