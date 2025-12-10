@@ -1,7 +1,7 @@
 const std = @import("std");
 const utils = @import("../utils.zig");
 
-const connCount: usize = 10;
+const connCount: usize = 1000;
 
 pub fn run() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -93,28 +93,29 @@ pub fn run() !void {
         }
     }
 
-    for (circuits.items, 0..circuits.items.len) |*circuit, idx| {
-        if (idx == circuit.items.len - 1) continue;
-        for (circuit.items) |point_id| {
-            if (idx == circuits.items.len - 1) break;
-            for (circuits.items, 0..circuits.items.len) |*otherCircuit, k| {
-                if (k < idx or k == idx) continue;
-                if (std.mem.indexOfScalar(usize, circuits.items[k].items, point_id) != null) {
-                    for (otherCircuit.items) |other_point_id| {
-                        if (std.mem.indexOfScalar(usize, circuit.items, other_point_id) == null) {
-                            try circuit.append(allocator, other_point_id);
+    while (true) {
+        var reconnectionCount: usize = 0;
+        for (circuits.items, 0..circuits.items.len) |*circuit, idx| {
+            for (circuit.items) |point_id| {
+                if (idx == circuits.items.len - 1) break;
+                for (circuits.items, 0..circuits.items.len) |*otherCircuit, k| {
+                    if (k < idx or k == idx) continue;
+                    if (std.mem.indexOfScalar(usize, circuits.items[k].items, point_id) != null) {
+                        for (otherCircuit.items) |other_point_id| {
+                            if (std.mem.indexOfScalar(usize, circuit.items, other_point_id) == null) {
+                                try circuit.append(allocator, other_point_id);
+                                try otherCircuit.resize(allocator, 0);
+                                reconnectionCount += 1;
+                            }
                         }
                     }
                 }
             }
         }
+        if (reconnectionCount == 0) break;
     }
 
     std.mem.sort(std.ArrayList(usize), circuits.items, {}, compareCircuits);
-
-    for (circuits.items) |circuit| {
-        std.debug.print("Circuit {any}\n", .{circuit});
-    }
 
     var result: usize = 1;
     for (0..3) |idx| {
