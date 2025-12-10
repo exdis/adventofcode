@@ -123,7 +123,28 @@ pub fn run() !void {
         result *= circuit.items.len;
     }
 
-    std.debug.print("Result: {}", .{result});
+    std.debug.print("Result: {}\n", .{result});
+
+    var processedPoints: std.ArrayList(usize) = .{};
+    defer processedPoints.deinit(allocator);
+
+    var result2: i32 = 0;
+    for (distances.items) |conn| {
+        if (std.mem.indexOfScalar(usize, processedPoints.items, conn.p1) == null) {
+            try processedPoints.append(allocator, conn.p1);
+        }
+        if (std.mem.indexOfScalar(usize, processedPoints.items, conn.p2) == null) {
+            try processedPoints.append(allocator, conn.p2);
+        }
+        if (processedPoints.items.len == input.lines.items.len) {
+            const point1 = points.get(conn.p1) orelse return error.PointNotFound;
+            const point2 = points.get(conn.p2) orelse return error.PointNotFound;
+            result2 = point1.x * point2.x;
+            break;
+        }
+    }
+
+    std.debug.print("Result 2: {}\n", .{result2});
 }
 
 const Point = struct {
