@@ -56,5 +56,55 @@ pub fn run() !void {
         }
     }
 
-    std.debug.print("Result {}\n", .{result});
+    std.debug.print("Result: {}\n", .{result});
+
+    var cache = std.StringHashMap(usize).init(allocator);
+    defer {
+        var it = cache.keyIterator();
+        while (it.next()) |key| {
+            allocator.free(key.*);
+        }
+        cache.deinit();
+    }
+
+    var result2 = try countPath(allocator, "svr", "fft", devices, &cache) * try countPath(allocator, "fft", "dac", devices, &cache) * try countPath(allocator, "dac", "out", devices, &cache);
+    result2 += try countPath(allocator, "svr", "dac", devices, &cache) * try countPath(allocator, "dac", "fft", devices, &cache) * try countPath(allocator, "fft", "out", devices, &cache);
+
+    std.debug.print("Result 2: {}\n", .{result2});
 }
+
+fn makeCacheKey(allocator: std.mem.Allocator, from: []const u8, to: []const u8) ![]const u8 {
+    return std.fmt.allocPrint(allocator, "{s}|{s}", .{ from, to });
+}
+
+fn countPath(allocator: std.mem.Allocator, from: []const u8, to: []const u8, devices: std.StringHashMap(std.ArrayList([]const u8)), cache: *std.StringHashMap(usize)) !usize {
+    const key = try makeCacheKey(allocator, from, to);
+    defer allocator.free(key);
+
+    if (cache.get(key)) |cached| {
+        return cached;
+    }
+    if (std.mem.eql(u8, from, to)) {
+        const newKey = try makeCacheKey(allocator, from, to);
+        try cache.put(newKey, 1);
+        return 1;
+    } else {
+        const emptyList: std.ArrayList([]const u8) = .{};
+        const connectionsFrom = devices.get(from) orelse emptyList;
+
+        var result: usize = 0;
+        for (connectionsFrom.items) |conn| {
+            result += try countPath(allocator, conn, to, devices, cache);
+        }
+
+        const newKey = try makeCacheKey(allocator, from, to);
+        try cache.put(newKey, result);
+
+        return result;
+    }
+}
+
+const State = struct {
+    device: []const u8,
+    path: std.StringHashMap(void),
+};
