@@ -23,6 +23,7 @@ zig build run -- --day %DAY_NUMBER%
 * [Day 9](2025/src/day9)
 * [Day 10](2025/src/day10)
 * [Day 11](2025/src/day11)
+* [Day 12](2025/src/day12)
 </details>
 </details>
 
