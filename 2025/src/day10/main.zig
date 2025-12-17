@@ -11,6 +11,7 @@ pub fn run() !void {
     defer input.deinit();
 
     var result: usize = 0;
+    var result2: usize = 0;
     for (input.lines.items) |line| {
         // Find the pattern part [.###.#]
         const bracket_start = std.mem.indexOf(u8, line, "[") orelse continue;
@@ -115,12 +116,159 @@ pub fn run() !void {
                 });
             }
         }
+
+        const n = joltages.items.len;
+
+        var options = std.AutoHashMap(u64, std.ArrayList(std.ArrayList(usize))).init(allocator);
+        defer {
+            var it = options.valueIterator();
+            while (it.next()) |list| {
+                for (list.items) |*pressed| {
+                    pressed.deinit(allocator);
+                }
+                list.deinit(allocator);
+            }
+            options.deinit();
+        }
+
+        var output = std.AutoHashMap(u64, []usize).init(allocator);
+        defer {
+            var it = output.valueIterator();
+            while (it.next()) |supply| {
+                allocator.free(supply.*);
+            }
+            output.deinit();
+        }
+
+        const buttonNums = buttons.items.len;
+        const allCombinations = @as(usize, 1) << @intCast(buttonNums);
+
+        for (0..allCombinations) |combo| {
+            var pressed: std.ArrayList(usize) = .{};
+            for (0..buttonNums) |b| {
+                if ((combo & (@as(usize, 1) << @intCast(b))) != 0) {
+                    try pressed.append(allocator, b);
+                }
+            }
+
+            const supply = try allocator.alloc(usize, n);
+            for (0..n) |j| {
+                var count: usize = 0;
+                for (pressed.items) |b| {
+                    for (buttons.items[b].items) |pos| {
+                        if (pos == j) count += 1;
+                    }
+                }
+                supply[j] = count;
+            }
+
+            var parityHash: u64 = 0;
+            for (supply, 0..) |s, j| {
+                if (s % 2 == 1) {
+                    parityHash |= (@as(u64, 1) << @intCast(j));
+                }
+            }
+
+            const entry = try options.getOrPut(parityHash);
+            if (!entry.found_existing) {
+                entry.value_ptr.* = .{};
+            }
+            try entry.value_ptr.append(allocator, pressed);
+
+            try output.put(combo, supply);
+        }
+
+        var memo = std.AutoHashMap(u64, usize).init(allocator);
+        defer memo.deinit();
+
+        const part2 = try opt(allocator, joltages.items, &options, &output, buttons.items, &memo);
+        result2 += part2;
     }
 
     std.debug.print("Result: {}\n", .{result});
+    std.debug.print("Result 2: {}\n", .{result2});
 }
 
 const State = struct {
     lights: usize,
     presses: usize,
 };
+
+fn opt(
+    allocator: std.mem.Allocator,
+    demands: []const usize,
+    options: *std.AutoHashMap(u64, std.ArrayList(std.ArrayList(usize))),
+    output: *std.AutoHashMap(u64, []usize),
+    buttons: []std.ArrayList(usize),
+    memo: *std.AutoHashMap(u64, usize),
+) !usize {
+    var hasher = std.hash.Wyhash.init(0);
+    const bytes = std.mem.sliceAsBytes(demands);
+    hasher.update(bytes);
+    const stateHash = hasher.final();
+
+    if (memo.get(stateHash)) |cached| {
+        return cached;
+    }
+
+    for (demands) |d| {
+        if (d > 10000) {
+            try memo.put(stateHash, 999999);
+            return 999999;
+        }
+    }
+
+    var sum: usize = 0;
+    for (demands) |d| sum += d;
+    if (sum == 0) {
+        try memo.put(stateHash, 0);
+        return 0;
+    }
+
+    var parityHash: u64 = 0;
+    for (demands, 0..) |d, j| {
+        if (d % 2 == 1) {
+            parityHash |= (@as(u64, 1) << @intCast(j));
+        }
+    }
+
+    var answer: usize = 999999;
+
+    if (options.get(parityHash)) |pressedList| {
+        for (pressedList.items) |pressed| {
+            const supply = try allocator.alloc(usize, demands.len);
+            defer allocator.free(supply);
+
+            for (0..demands.len) |j| {
+                var count: usize = 0;
+                for (pressed.items) |b| {
+                    for (buttons[b].items) |pos| {
+                        if (pos == j) count += 1;
+                    }
+                }
+                supply[j] = count;
+            }
+
+            const remain = try allocator.alloc(usize, demands.len);
+            defer allocator.free(remain);
+
+            var valid = true;
+            for (demands, 0..) |d, j| {
+                const s = supply[j];
+                if (d < s) {
+                    valid = false;
+                    break;
+                }
+                remain[j] = (d - s) / 2;
+            }
+
+            if (!valid) continue;
+
+            const cost = pressed.items.len + 2 * try opt(allocator, remain, options, output, buttons, memo);
+            answer = @min(answer, cost);
+        }
+    }
+
+    try memo.put(stateHash, answer);
+    return answer;
+}
